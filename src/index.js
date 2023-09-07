@@ -24,27 +24,32 @@ const MSGS = {
 
 
 
-function deleteEntry(dispatch, entryId) {
+function deleteEntries(dispatch, entryId) {
+  
   return () => {
     dispatch({ type: MSGS.DELETE_ENTRY, id: entryId });
   };
+  
 }
-//Test
-function updateEntry(dispatch, entry) {
-  console.log(msg.id);
+
+function showEntries(dispatch, entryId) {
+  
   return () => {
-    dispatch({ type: MSGS.DELETE_ENTRY, id: entry.id });
-    // Gleichzeitig den bearbeiteten Eintrag ins Modell laden
-    dispatch({ type: MSGS.UPDATE_ENTRY, entry });
+    dispatch({ type: MSGS.SHOW_AWNSER, id: entryId });
   };
   
 }
 
 
 
+
+
+
+
+
 // View function which represents the UI as HTML-tag functions
 function view(dispatch, model) {
-
+  console.log(model.entries);
 
   return div({ className: "flex flex-col gap-4 " }, [
     h1({ className: "text-2xl" }, `Projekt Modul 323`),
@@ -65,20 +70,18 @@ function view(dispatch, model) {
           h2({ className: "text-xl" }, `Card`),
           p({ className: "" }, `Question : ${entry.question}`),
           button(
-            { className: "", onclick: () => dispatch(generateMessage(MSGS.SHOW_AWNSER)) },
-            "Flip Card"
-          ),
+            { className: "", onclick: showEntries(dispatch, entry.id) },"Flip Card"),
           
           
           div({className: ""}, entry.visibility ? [
             p({ className: "" }, `Awnser : ${entry.awnser}`),
             // Button zum Löschen eines Eintrags
-            button({ className: "bg-red-700 hover:bg-red-900 text-white font-bold py-1 px-1 rounded", onclick: deleteEntry(dispatch, entry.id) }, "Delete Entry"),
+            button({ className: "bg-red-700 hover:bg-red-900 text-white font-bold py-1 px-1 rounded", onclick: deleteEntries(dispatch, entry.id) }, "Delete Entry"),
             button({ className: "bg-blue-700 hover:bg-blue-900 text-white font-bold py-1 px-1 rounded", onclick: () => dispatch(updateEntry(dispatch, entry.id)) },"Edit"),
             div({ className: "gap-2 flex-row "}, [
-              button({ className: "bg-red-500 hover:bg-red-700", onclick: deleteEntry(dispatch, entry.id) }, "Bad"),
-              button({ className: "bg-blue-500 hover:bg-blue-700", onclick: deleteEntry(dispatch, entry.id) }, "Good"),
-              button({ className: "bg-green-500 hover:bg-green-700", onclick: deleteEntry(dispatch, entry.id) }, "Great"),
+              button({ className: "bg-red-500 hover:bg-red-700", onclick: deleteEntries(dispatch, entry.id) }, "Bad"),
+              button({ className: "bg-blue-500 hover:bg-blue-700", onclick: deleteEntries(dispatch, entry.id) }, "Good"),
+              button({ className: "bg-green-500 hover:bg-green-700", onclick: deleteEntries(dispatch, entry.id) }, "Great"),
             ]),
           ] : [] ),
 
@@ -107,8 +110,11 @@ const generateMessage = (msg, data) => {
 
 
 // Update function which takes a message and a model and returns a new/updated model
+
 function update(msg, model) {
-  console.log(model.entries);
+  console.log(msg.id);
+  
+
   switch (msg.type) {
     case MSGS.INPUT_LOCATION:
       return { ...model, nameQuestion: msg.data };
@@ -126,8 +132,8 @@ function update(msg, model) {
       return { ...model, id, entries };
 
       case MSGS.DELETE_ENTRY:
-        const deleteEntrie = model.entries.filter((entry) => entry.id !== msg.id);
-      return { ...model, entries: deleteEntrie };
+        const deleteEntries = model.entries.filter((entry) => entry.id !== msg.id);
+      return { ...model, entries: deleteEntries };
 
       case MSGS.UPDATE_ENTRY:
       // Setzen des editingEntry-Feldes auf den ausgewählten Eintrag
@@ -135,8 +141,26 @@ function update(msg, model) {
 
 
       case MSGS.SHOW_AWNSER:
-        //const showEntry = model.entries.filter((entry) => entry.visibility === true);
-      return {};
+      let showEntries = [];
+      
+      function chooseEntry() {
+        return model.entries.map((entry)  => {
+          if (entry.id === msg.id) {
+            if (entry.visibility === false) {
+              return {...entry, visibility: true}
+            }
+            else if (entry.visibility !== false) {
+              return {...entry, visibility: false}
+            } 
+          }
+          else {
+            return {...entry};
+          }
+        })
+        }
+        showEntries = chooseEntry();
+      
+      return { ...model, entries: showEntries}
 
   }
 
