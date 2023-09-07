@@ -1,349 +1,261 @@
 import hh from "hyperscript-helpers";
-import { test } from "ramda";
 import { h, diff, patch } from "virtual-dom";
 import createElement from "virtual-dom/create-element";
 
-
-// allows using html tags as functions in javascript wsws
-//dewnn
 const { div, button, p, h1, h2, input } = hh(h);
 
-// A combination of Tailwind classes which represent a (more or less nice) button style
 const btnStyle = "inline-block bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded inline";
-const btnRoundlayout = " text-white font-bold py-1 px-1 rounded";
+const btnRoundLayout = "text-white font-bold py-1 px-1 rounded";
 
-// Messages which can be used to update the model
-const MSGS = {
+const MESSAGES = {
   INPUT_LOCATION: "INPUT_LOCATION",
   SAVE_INPUT: "SAVE_INPUT",
-  INPUT_AWNSER: "INPUT_AWNSER",
+  INPUT_ANSWER: "INPUT_ANSWER",
   DELETE_ENTRY: "DELETE_ENTRY",
   UPDATE_ENTRY: "UPDATE_ENTRY",
-  SHOW_AWNSER: "SHOW_AWNSER",
+  SHOW_ANSWER: "SHOW_ANSWER",
   RANK_BAD: "RANK_BAD",
   RANK_GOOD: "RANK_GOOD",
   RANK_GREAT: "RANK_GREAT",
 };
 
-
-
-
 function deleteEntries(dispatch, entryId) {
-  
   return () => {
-    dispatch({ type: MSGS.DELETE_ENTRY, id: entryId });
+    dispatch({ type: MESSAGES.DELETE_ENTRY, id: entryId });
   };
-  
 }
 
 function showEntries(dispatch, entryId) {
-  
   return () => {
-    dispatch({ type: MSGS.SHOW_AWNSER, id: entryId });
+    dispatch({ type: MESSAGES.SHOW_ANSWER, id: entryId });
   };
-  
 }
 
-function badEntries(dispatch, entryId) {
-  
+function rankBadEntries(dispatch, entryId) {
   return () => {
-    dispatch({ type: MSGS.RANK_BAD, id: entryId });
+    dispatch({ type: MESSAGES.RANK_BAD, id: entryId });
   };
-  
 }
 
-function goodEntries(dispatch, entryId) {
-  
+function rankGoodEntries(dispatch, entryId) {
   return () => {
-    dispatch({ type: MSGS.RANK_GOOD, id: entryId });
+    dispatch({ type: MESSAGES.RANK_GOOD, id: entryId });
   };
-  
 }
 
-function greatEntries(dispatch, entryId) {
-  
+function rankGreatEntries(dispatch, entryId) {
   return () => {
-    dispatch({ type: MSGS.RANK_GREAT, id: entryId });
+    dispatch({ type: MESSAGES.RANK_GREAT, id: entryId });
   };
-  
 }
 
 function updateEntries(dispatch, entryId) {
-  
   return () => {
-    dispatch({ type: MSGS.UPDATE_ENTRY, id: entryId });
+    dispatch({ type: MESSAGES.UPDATE_ENTRY, id: entryId });
   };
-  
 }
 
-
-
-
-
-
-
-
-// View the function which represents the UI as HTML-tag functions
 function view(dispatch, model) {
-  console.log(model);
-
   return div({ className: "flex flex-col gap-4 " }, [
     h1({ className: "text-2xl" }, `Projekt Modul 323`),
-    div({className: "flex gap-2"}, [
-      div({className: "flex gap-2"}, [
-        input({ className: "shadow border-zinc-800",value: model.nameQuestion , placeholder: "Enter Question...", oninput: (event) => dispatch(generateMessage(MSGS.INPUT_LOCATION, event.target.value)) }, ),
-        input({ className: "shadow border-zinc-800",value: model.awnser, placeholder: "Enter Anwser...", oninput: (event) => dispatch(generateMessage(MSGS.INPUT_AWNSER, event.target.value)) }, ),
-        button({ className: btnStyle, onclick: () => dispatch(generateMessage(MSGS.SAVE_INPUT))}, "Add"),
+    div({ className: "flex gap-2" }, [
+      div({ className: "flex gap-2" }, [
+        input({ className: "shadow border-zinc-800", value: model.nameQuestion, placeholder: "Enter Question...", oninput: (event) => dispatch(generateMessage(MESSAGES.INPUT_LOCATION, event.target.value)) }, ),
+        input({ className: "shadow border-zinc-800", value: model.answer, placeholder: "Enter Answer...", oninput: (event) => dispatch(generateMessage(MESSAGES.INPUT_ANSWER, event.target.value)) }, ),
+        button({ className: btnStyle, onclick: () => dispatch(generateMessage(MESSAGES.SAVE_INPUT)) }, "Add"),
       ]),
     ]),
-    
-    
-    
-    
     div({ className: "min-w-full divide-y" }, [
       ...model.entries.map((entry) =>
         div({ className: "bg-amber-500 inline-block w-72 h-72" }, [
           h2({ className: "text-base" }, `Card ${entry.id}`),
           p({ className: "text-xl" }, `Question : ${entry.question}`),
           button(
-            { className: "bg-amber-500 hover:bg-amber-600 " + btnRoundlayout, onclick: showEntries(dispatch, entry.id) },"Flip Card"),
-          
-          
-          div({className: ""}, entry.visibility ? [
-            p({ className: "text-xl" }, `Awnser : ${entry.awnser}`),
-            // Button zum Löschen eines Eintrags
+            { className: "bg-amber-500 hover:bg-amber-600 " + btnRoundLayout, onclick: showEntries(dispatch, entry.id) }, "Flip Card"),
+          div({ className: "" }, entry.visibility ? [
+            p({ className: "text-xl" }, `Answer : ${entry.answer}`),
             p({ className: "text-base" }, `Rank : ${entry.ranking}`),
-            div({ className: "gap-2 flex object-bottom"}, [
-              
-              div({ className: " "} , [
-                button({ className: "bg-red-700 hover:bg-red-900 " + btnRoundlayout, onclick: deleteEntries(dispatch, entry.id) }, "Delete Entry"),
-                button({ className: "bg-blue-700 hover:bg-blue-900 " + btnRoundlayout, onclick: updateEntries(dispatch, entry.id) },"Edit"),
+            div({ className: "gap-2 flex object-bottom" }, [
+              div({ className: "" }, [
+                button({ className: "bg-red-700 hover:bg-red-900 " + btnRoundLayout, onclick: deleteEntries(dispatch, entry.id) }, "Delete Entry"),
+                button({ className: "bg-blue-700 hover:bg-blue-900 " + btnRoundLayout, onclick: updateEntries(dispatch, entry.id) }, "Edit"),
               ]),
-              div({ className: " "} , [
-                button({ className: "bg-red-500 hover:bg-red-700 " + btnRoundlayout, onclick: badEntries(dispatch, entry.id) }, "Bad"),
-                button({ className: "bg-blue-500 hover:bg-blue-700 " + btnRoundlayout, onclick: goodEntries(dispatch, entry.id) }, "Good"),
-                button({ className: "bg-green-500 hover:bg-green-700 " + btnRoundlayout, onclick: greatEntries(dispatch, entry.id) }, "Great"),
+              div({ className: "" }, [
+                button({ className: "bg-red-500 hover:bg-red-700 " + btnRoundLayout, onclick: rankBadEntries(dispatch, entry.id) }, "Bad"),
+                button({ className: "bg-blue-500 hover:bg-blue-700 " + btnRoundLayout, onclick: rankGoodEntries(dispatch, entry.id) }, "Good"),
+                button({ className: "bg-green-500 hover:bg-green-700 " + btnRoundLayout, onclick: rankGreatEntries(dispatch, entry.id) }, "Great"),
               ]),
             ]),
-          ] : [] ),
+          ] : []),
         ]),
       ),
     ]),
   ]);
 }
 
-
-
 const generateMessage = (msg, data) => {
-  
   return {
     type: msg,
     data,
-    
   };
-  
 };
-
-
-
-// Update function which takes a message and a model and returns a new/updated model
 
 function update(msg, model) {
-
-
+  console.log(MESSAGES.INPUT_LOCATION);
 
   switch (msg.type) {
-    case MSGS.INPUT_LOCATION:
+    case MESSAGES.INPUT_LOCATION:
       return { ...model, nameQuestion: msg.data };
-    
-    case MSGS.INPUT_AWNSER:
-      return { ...model, awnser: msg.data };
 
-      case MSGS.SAVE_INPUT:
-        const question = model.nameQuestion;
-        const awnser = model.awnser;
-        const id = model.id + 1; // Erhöhe die ID für den neuen Eintrag
-        const entry = { id, question: question, awnser: awnser, visibility: false, ranking: 0};
-        const entries = [...model.entries, entry];
-        model.awnser = ""
-        model.nameQuestion = "";
+    case MESSAGES.INPUT_ANSWER:
+      return { ...model, answer: msg.data };
+
+    case MESSAGES.SAVE_INPUT:
+      const question = model.nameQuestion;
+      const answer = model.answer;
+      const id = model.id + 1;
+      const entry = { id, question: question, answer: answer, visibility: false, ranking: 0 };
+      const entries = [...model.entries, entry];
+      model.answer = "";
+      model.nameQuestion = "";
       return { ...model, id, entries };
 
-      case MSGS.UPDATE_ENTRY:
-        let updateEntries = [];
-        let updateQuestion = "";
-        let updateAwnser = "";
+    case MESSAGES.UPDATE_ENTRY:
+      let updateEntries = [];
+      let updateQuestion = "";
+      let updateAnswer = "";
 
-        function updateEntry() {
-          return model.entries.map((entry) => {
-            if (entry.id === msg.id) {
-              return {...entry, updateQuestion: entry.question, updateAwnser: entry.awnser}
-            }
-            else {}
-          })
-        }
-
-        updateEntries = updateEntry();
-
-        model.nameQuestion = updateQuestion;
-        model.awnser = updateAwnser;
-        return { ...model, nameQuestion: updateQuestion, awnser: updateAwnser, entries : updateEntries};
-
-
-      
-
-
-
-      case MSGS.DELETE_ENTRY:
-        const deleteEntries = model.entries.filter((entry) => entry.id !== msg.id);
-      return { ...model, entries: deleteEntries };
-
-      case MSGS.UPDATE_ENTRY:
-      // Setzen des editingEntry-Feldes auf den ausgewählten Eintrag
-      return { ...model, editingEntry: msg.entry };
-
-
-      case MSGS.SHOW_AWNSER:
-      let showEntries = [];
-      
-      function chooseEntry() {
-        return model.entries.map((entry)  => {
+      function updateEntry() {
+        return model.entries.map((entry) => {
           if (entry.id === msg.id) {
-            if (entry.visibility === false) {
-              return {...entry, visibility: true}
-            }
-            else if (entry.visibility !== false) {
-              return {...entry, visibility: false}
-            } 
+            return { ...entry, updateQuestion: entry.question, updateAnswer: entry.answer }
           }
           else {
-            return {...entry};
+            return { ...entry };
           }
         })
-        }
-        showEntries = chooseEntry();
-      
-      return { ...model, entries: showEntries}
+      }
 
+      updateEntries = updateEntry();
 
+      model.nameQuestion = updateQuestion;
+      model.answer = updateAnswer;
+      return { ...model, nameQuestion: updateQuestion, answer: updateAnswer, entries: updateEntries };
 
-      case MSGS.RANK_BAD:
-        let badEntries = [];
+    case MESSAGES.DELETE_ENTRY:
+      const deleteEntries = model.entries.filter((entry) => entry.id !== msg.id);
+      return { ...model, entries: deleteEntries };
 
-        function badEntry() {
-          return model.entries.map((entry) => {
-            if (entry.id === msg.id) {
-              return {...entry, ranking: 0, visibility: false}
+    case MESSAGES.UPDATE_ENTRY:
+      return { ...model, editingEntry: msg.entry };
+
+    case MESSAGES.SHOW_ANSWER:
+      let showEntries = [];
+
+      function chooseEntry() {
+        return model.entries.map((entry) => {
+          if (entry.id === msg.id) {
+            if (entry.visibility === false) {
+              return { ...entry, visibility: true }
             }
-            else {
-              return {...entry};
+            else if (entry.visibility !== false) {
+              return { ...entry, visibility: false }
             }
-          })
-        }
+          }
+          else {
+            return { ...entry };
+          }
+        })
+      }
+      showEntries = chooseEntry();
+      return { ...model, entries: showEntries }
 
-        badEntries = badEntry();
+    case MESSAGES.RANK_BAD:
+      let badEntries = [];
 
-        badEntries.sort((a, b) => a.ranking - b.ranking);
+      function badEntry() {
+        return model.entries.map((entry) => {
+          if (entry.id === msg.id) {
+            return { ...entry, ranking: 0, visibility: false }
+          }
+          else {
+            return { ...entry };
+          }
+        })
+      }
 
-      return { ...model, entries: badEntries}
+      badEntries = badEntry();
 
+      badEntries.sort((a, b) => a.ranking - b.ranking);
 
+      return { ...model, entries: badEntries }
 
-      case MSGS.RANK_GOOD:
-        let goodEntries = [];
+    case MESSAGES.RANK_GOOD:
+      let goodEntries = [];
 
-        function goodEntry() {
-          return model.entries.map((entry) => {
-            if (entry.id === msg.id) {
-              return {...entry, ranking: entry.ranking + 1, visibility: false}
-            }
-            else {
-              return {...entry};
-            }
-          })
-        }
+      function goodEntry() {
+        return model.entries.map((entry) => {
+          if (entry.id === msg.id) {
+            return { ...entry, ranking: entry.ranking + 1, visibility: false }
+          }
+          else {
+            return { ...entry };
+          }
+        })
+      }
 
-        goodEntries = goodEntry();
+      goodEntries = goodEntry();
 
-        goodEntries.sort((a, b) => a.ranking - b.ranking);
+      goodEntries.sort((a, b) => a.ranking - b.ranking);
 
-      return { ...model, entries: goodEntries}
+      return { ...model, entries: goodEntries }
 
+    case MESSAGES.RANK_GREAT:
+      let greatEntries = [];
 
+      function greatEntry() {
+        return model.entries.map((entry) => {
+          if (entry.id === msg.id) {
+            return { ...entry, ranking: entry.ranking + 2, visibility: false }
+          }
+          else {
+            return { ...entry };
+          }
+        })
+      }
 
+      greatEntries = greatEntry();
 
+      greatEntries.sort((a, b) => a.ranking - b.ranking);
 
-      case MSGS.RANK_GREAT:
-        let greatEntries = [];
-
-        function greatEntry() {
-          return model.entries.map((entry) => {
-            if (entry.id === msg.id) {
-              return {...entry, ranking: entry.ranking + 2, visibility: false}
-            }
-            else {
-              return {...entry};
-            }
-          })
-        }
-
-        greatEntries = greatEntry();
-
-        greatEntries.sort((a, b) => a.ranking - b.ranking);
-
-      return { ...model, entries: greatEntries}
-
+      return { ...model, entries: greatEntries }
   }
+}
 
-};
-
-
-
-
-
-// ⚠️ Impure code below (not avoidable but controllable)
 function app(initModel, update, view, node) {
   let model = initModel;
   let currentView = view(dispatch, model);
   let rootNode = createElement(currentView);
   node.appendChild(rootNode);
+
   function dispatch(msg) {
     model = update(msg, model);
     const updatedView = view(dispatch, model);
     const patches = diff(currentView, updatedView);
     rootNode = patch(rootNode, patches);
     currentView = updatedView;
-    
-
   }
 }
 
-
-
-// The initial model when the app starts
 const initModel = {
   nameQuestion: "",
-  id : 0,
-  awnser: "",
-  awnserState: true,
+  id: 0,
+  answer: "",
+  answerState: true,
   entries: [],
 };
 
-// The root node of the app (the div with id="app" in index.html)
 const rootNode = document.getElementById("app");
-
-// Start the app
 app(initModel, update, view, rootNode);
 
-
-
-
-
-
-
-
-
-
-
-
-
+module.exports = { generateMessage };
