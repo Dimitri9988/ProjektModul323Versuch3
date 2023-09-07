@@ -83,7 +83,7 @@ function updateEntries(dispatch, entryId) {
 
 
 
-// View function which represents the UI as HTML-tag functions
+// View the function which represents the UI as HTML-tag functions
 function view(dispatch, model) {
   console.log(model);
 
