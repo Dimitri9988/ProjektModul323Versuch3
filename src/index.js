@@ -10,6 +10,7 @@ const { div, button, p, h1, h2, input, table, tr, td, } = hh(h);
 
 // A combination of Tailwind classes which represent a (more or less nice) button style
 const btnStyle = "inline-block bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded inline";
+const btnRoundlayout = " text-white font-bold py-1 px-1 rounded";
 
 // Messages which can be used to update the model
 const MSGS = {
@@ -67,21 +68,26 @@ function view(dispatch, model) {
     div({ className: "min-w-full divide-y" }, [
       ...model.entries.map((entry) =>
         div({ className: "bg-amber-500 inline-block w-72 h-72" }, [
-          h2({ className: "text-xl" }, `Card`),
+          h2({ className: "text-xl" }, `Card ${entry.id}`),
           p({ className: "" }, `Question : ${entry.question}`),
           button(
-            { className: "", onclick: showEntries(dispatch, entry.id) },"Flip Card"),
+            { className: "bg-amber-500 hover:bg-amber-600 " + btnRoundlayout, onclick: showEntries(dispatch, entry.id) },"Flip Card"),
           
           
           div({className: ""}, entry.visibility ? [
             p({ className: "" }, `Awnser : ${entry.awnser}`),
             // Button zum Löschen eines Eintrags
-            button({ className: "bg-red-700 hover:bg-red-900 text-white font-bold py-1 px-1 rounded", onclick: deleteEntries(dispatch, entry.id) }, "Delete Entry"),
-            button({ className: "bg-blue-700 hover:bg-blue-900 text-white font-bold py-1 px-1 rounded", onclick: () => dispatch(updateEntry(dispatch, entry.id)) },"Edit"),
-            div({ className: "gap-2 flex-row "}, [
-              button({ className: "bg-red-500 hover:bg-red-700", onclick: deleteEntries(dispatch, entry.id) }, "Bad"),
-              button({ className: "bg-blue-500 hover:bg-blue-700", onclick: deleteEntries(dispatch, entry.id) }, "Good"),
-              button({ className: "bg-green-500 hover:bg-green-700", onclick: deleteEntries(dispatch, entry.id) }, "Great"),
+          
+            div({ className: "gap-2 flex object-bottom"}, [
+              div({ className: " "} , [
+                button({ className: "bg-red-700 hover:bg-red-900 " + btnRoundlayout, onclick: deleteEntries(dispatch, entry.id) }, "Delete Entry"),
+                button({ className: "bg-blue-700 hover:bg-blue-900 " + btnRoundlayout, onclick: () => dispatch(updateEntry(dispatch, entry.id)) },"Edit"),
+              ]),
+              div({ className: " "} , [
+                button({ className: "bg-red-500 hover:bg-red-700 " + btnRoundlayout, onclick: deleteEntries(dispatch, entry.id) }, "Bad"),
+                button({ className: "bg-blue-500 hover:bg-blue-700 " + btnRoundlayout, onclick: deleteEntries(dispatch, entry.id) }, "Good"),
+                button({ className: "bg-green-500 hover:bg-green-700 " + btnRoundlayout, onclick: deleteEntries(dispatch, entry.id) }, "Great"),
+              ]),
             ]),
           ] : [] ),
 
