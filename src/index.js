@@ -19,7 +19,10 @@ const MSGS = {
   INPUT_AWNSER: "INPUT_AWNSER",
   DELETE_ENTRY: "DELETE_ENTRY",
   UPDATE_ENTRY: "UPDATE_ENTRY",
-  SHOW_AWNSER: "SHOW_AWNSER", 
+  SHOW_AWNSER: "SHOW_AWNSER",
+  RANK_BAD: "RANK_BAD",
+  RANK_GOOD: "RANK_GOOD",
+  RANK_GREAT: "RANK_GREAT",
 };
 
 
@@ -37,6 +40,38 @@ function showEntries(dispatch, entryId) {
   
   return () => {
     dispatch({ type: MSGS.SHOW_AWNSER, id: entryId });
+  };
+  
+}
+
+function badEntries(dispatch, entryId) {
+  
+  return () => {
+    dispatch({ type: MSGS.RANK_BAD, id: entryId });
+  };
+  
+}
+
+function goodEntries(dispatch, entryId) {
+  
+  return () => {
+    dispatch({ type: MSGS.RANK_GOOD, id: entryId });
+  };
+  
+}
+
+function greatEntries(dispatch, entryId) {
+  
+  return () => {
+    dispatch({ type: MSGS.RANK_GREAT, id: entryId });
+  };
+  
+}
+
+function updateEntries(dispatch, entryId) {
+  
+  return () => {
+    dispatch({ type: MSGS.RANK_GREAT, id: entryId });
   };
   
 }
@@ -68,34 +103,30 @@ function view(dispatch, model) {
     div({ className: "min-w-full divide-y" }, [
       ...model.entries.map((entry) =>
         div({ className: "bg-amber-500 inline-block w-72 h-72" }, [
-          h2({ className: "text-xl" }, `Card ${entry.id}`),
-          p({ className: "" }, `Question : ${entry.question}`),
+          h2({ className: "text-base" }, `Card ${entry.id}`),
+          p({ className: "text-xl" }, `Question : ${entry.question}`),
           button(
             { className: "bg-amber-500 hover:bg-amber-600 " + btnRoundlayout, onclick: showEntries(dispatch, entry.id) },"Flip Card"),
           
           
           div({className: ""}, entry.visibility ? [
-            p({ className: "" }, `Awnser : ${entry.awnser}`),
+            p({ className: "text-xl" }, `Awnser : ${entry.awnser}`),
             // Button zum Löschen eines Eintrags
-          
+            p({ className: "text-base" }, `Rank : ${entry.ranking}`),
             div({ className: "gap-2 flex object-bottom"}, [
+              
               div({ className: " "} , [
                 button({ className: "bg-red-700 hover:bg-red-900 " + btnRoundlayout, onclick: deleteEntries(dispatch, entry.id) }, "Delete Entry"),
                 button({ className: "bg-blue-700 hover:bg-blue-900 " + btnRoundlayout, onclick: () => dispatch(updateEntry(dispatch, entry.id)) },"Edit"),
               ]),
               div({ className: " "} , [
-                button({ className: "bg-red-500 hover:bg-red-700 " + btnRoundlayout, onclick: deleteEntries(dispatch, entry.id) }, "Bad"),
-                button({ className: "bg-blue-500 hover:bg-blue-700 " + btnRoundlayout, onclick: deleteEntries(dispatch, entry.id) }, "Good"),
-                button({ className: "bg-green-500 hover:bg-green-700 " + btnRoundlayout, onclick: deleteEntries(dispatch, entry.id) }, "Great"),
+                button({ className: "bg-red-500 hover:bg-red-700 " + btnRoundlayout, onclick: badEntries(dispatch, entry.id) }, "Bad"),
+                button({ className: "bg-blue-500 hover:bg-blue-700 " + btnRoundlayout, onclick: goodEntries(dispatch, entry.id) }, "Good"),
+                button({ className: "bg-green-500 hover:bg-green-700 " + btnRoundlayout, onclick: greatEntries(dispatch, entry.id) }, "Great"),
               ]),
             ]),
           ] : [] ),
-
-        
-        
         ]),
-        
-
       ),
     ]),
   ]);
@@ -167,6 +198,74 @@ function update(msg, model) {
         showEntries = chooseEntry();
       
       return { ...model, entries: showEntries}
+
+
+
+      case MSGS.RANK_BAD:
+        let badEntries = [];
+
+        function badEntry() {
+          return model.entries.map((entry) => {
+            if (entry.id === msg.id) {
+              return {...entry, ranking: 0, visibility: false}
+            }
+            else {
+              return {...entry};
+            }
+          })
+        }
+
+        badEntries = badEntry();
+
+        badEntries.sort((a, b) => b.ranking - a.ranking);
+
+      return { ...model, entries: badEntries}
+
+
+
+      case MSGS.RANK_GOOD:
+        let goodEntries = [];
+
+        function goodEntry() {
+          return model.entries.map((entry) => {
+            if (entry.id === msg.id) {
+              return {...entry, ranking: entry.ranking + 1, visibility: false}
+            }
+            else {
+              return {...entry};
+            }
+          })
+        }
+
+        goodEntries = goodEntry();
+
+        goodEntries.sort((a, b) => b.ranking - a.ranking);
+
+      return { ...model, entries: goodEntries}
+
+
+
+
+
+      case MSGS.RANK_GREAT:
+        let greatEntries = [];
+
+        function greatEntry() {
+          return model.entries.map((entry) => {
+            if (entry.id === msg.id) {
+              return {...entry, ranking: entry.ranking + 2, visibility: false}
+            }
+            else {
+              return {...entry};
+            }
+          })
+        }
+
+        greatEntries = greatEntry();
+
+        greatEntries.sort((a, b) => b.ranking - a.ranking);
+
+      return { ...model, entries: greatEntries}
 
   }
 
