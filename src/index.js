@@ -6,7 +6,7 @@ import createElement from "virtual-dom/create-element";
 
 // allows using html tags as functions in javascript wsws
 //dewnn
-const { div, button, p, h1, h2, input, table, tr, td, } = hh(h);
+const { div, button, p, h1, h2, input } = hh(h);
 
 // A combination of Tailwind classes which represent a (more or less nice) button style
 const btnStyle = "inline-block bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded inline";
@@ -132,7 +132,7 @@ function update(msg, model) {
         const question = model.nameQuestion;
         const awnser = model.awnser;
         const id = model.id + 1; // Erhöhe die ID für den neuen Eintrag
-        const entry = { id, question: question, awnser: awnser, visibility: false };
+        const entry = { id, question: question, awnser: awnser, visibility: false, ranking: 0};
         const entries = [...model.entries, entry];
         model.nameLocation = "";
       return { ...model, id, entries };
