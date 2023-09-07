@@ -149,8 +149,8 @@ const generateMessage = (msg, data) => {
 // Update function which takes a message and a model and returns a new/updated model
 
 function update(msg, model) {
-  console.log(msg.id);
-  
+  console.log(model.awnser);
+  console.log(model.nameQuestion);
 
   switch (msg.type) {
     case MSGS.INPUT_LOCATION:
@@ -165,7 +165,15 @@ function update(msg, model) {
         const id = model.id + 1; // Erhöhe die ID für den neuen Eintrag
         const entry = { id, question: question, awnser: awnser, visibility: false, ranking: 0};
         const entries = [...model.entries, entry];
-        model.nameLocation = "";
+        
+        
+        model.awnser = ""
+        model.nameQuestion = "";
+
+
+
+
+
       return { ...model, id, entries };
 
       case MSGS.DELETE_ENTRY:
